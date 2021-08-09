@@ -1,0 +1,55 @@
+version: 2.1
+jobs:
+  Kernel_miatoll:
+   docker:
+      - image: ubuntu:18.04
+   steps:
+      - run:
+          name: Prepare Environment
+          no_output_timeout: 20m
+          command: |
+           export TERM=xterm
+           apt-get update -y && ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && apt-get install bison build-essential curl flex git gnupg gperf ccache liblz4-tool libncurses5-dev libsdl1.2-dev libxml2 libxml2-utils lzop pngcrush schedtool squashfs-tools xsltproc zip zlib1g-dev build-essential kernel-package libncurses5-dev bzip2 git python wget gcc g++ curl sudo libssl-dev openssl -y
+      - run:
+          name: Downloading sources
+          no_output_timeout: 20m
+          command: |
+            cd ~
+            mkdir clang &&
+            git clonehttps://github.com/kdrag0n/proton-clang --depth=1
+            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git --depth=1 --branch=$CIRCLE_BRANCH kernel
+            git clone https://github.com/GeoZac/AnyKernel.git --depth=1 --branch=miatoll AnyKernel
+      - run:
+          name: Compile
+          no_output_timeout: 20m
+          command: |
+            echo 'export CROSS_COMPILE=$HOME/proton-clang/bin/aarch64-linux-android-' >> $BASH_ENV
+            echo 'export PATH="$HOME/proton-clang/bin/aarch64-linux-gnu:$HOME/proton-clang/bin:$HOME/proton-clang/bin/arm-linux-gneuabi:$PATH"' >> $BASH_ENV
+            echo 'export ARCH=arm64' >> $BASH_ENV
+            echo 'export SUBARCH=arm64' >> $BASH_ENV
+            echo 'export KBUILD_BUILD_USER="gas,"' >> $BASH_ENV
+            echo 'export KBUILD_BUILD_HOST="CircleCI"' >> $BASH_ENV
+            source $BASH_ENV
+            cd ~/kernel
+            make clean && make mrproper O=output
+            make cust_defconfig O=output
+            make -j$(nproc --all) CC=/root/proton-clang/bin/clang CROSS_COMPILE=/root/proton-clang/bin/aarch64-linux-android- CROSS_COMPILE_ARM32=/root/proton-clang/bin/arm-linux-androideabi- O=output
+      - run:
+          name: Send to telegram
+          no_output_timeout: 20m
+          command: |
+            cd ~/AnyKernel
+            cp ~/kernel/output/arch/arm64/boot/Image.gz-dtb .
+            cp ~/kernel/output/arch/arm64/boot/dtbo.img .
+            ZIPNAME="Kernel-$(date +%d_%m_%Y_%H_%M)-miatoll.zip"
+            zip -r9 "${ZIPNAME}" ./* -x ".git/*" "README.md" ".gitignore" "*.zip"
+            curl -F chat_id=$1874942502 -F document=@$ZIPNAME -F parse_mode=markdown https://api.telegram.org/bot1874942502:AAEQJGji80NVhZfjPMuLq1HmQBQ0OajYwhQ/sendDocument
+      - store_artifacts:
+          path: ~/kernel/output/.config
+          destination: kernel_defconfig
+
+workflows:
+  version: 2.1
+  cooking:
+    jobs:
+      - Kernel_miatoll
