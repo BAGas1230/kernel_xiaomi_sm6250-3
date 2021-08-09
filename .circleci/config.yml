@@ -1,4 +1,3 @@
-
 version: 2.1
 jobs:
   Kernel_miatoll:
@@ -17,15 +16,20 @@ jobs:
           command: |
             cd ~
             mkdir clang &&
-            git clone https://github.com/kdrag0n/proton-clang --depth=1
+            git clonehttps://github.com/kdrag0n/proton-clang --depth=1
+export KBUILD_BUILD_USER="gass"
+	export ARCH=arm64
+	export SUBARCH=arm64
+	PATH=$CLANG_DIR/bin/:/usr/bin:$PATH
+
+	export PATH KBUILD_COMPILER_STRING
+	export BOT_MSG_URL="https://api.telegram.org/1874942502:AAEQJGji80NVhZfjPMuLq1HmQBQ0OajYwhQ/sendMessage"
+	export BOT_BUILD_URL="https://api.telegram.org/1874942502:AAEQJGji80NVhZfjPMuLq1HmQBQ0OajYwhQ/sendDocument"
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git --depth=1 --branch=$CIRCLE_BRANCH kernel
-            git clone https://github.com/GeoZac/AnyKernel.git --depth=1 --branch=miatoll AnyKernel
-      - run:
-          name: Compile
+            
+         name: Compile
           no_output_timeout: 20m
-          command: |
-            echo 'export CROSS_COMPILE=$HOME/proton-clang/bin/aarch64-linux-android-' >> $BASH_ENV
-            echo 'export PATH="$HOME/proton-clang/bin/aarch64-linux-gnu:$HOME/proton-clang/bin:$HOME/proton-clang/bin/arm-linux-gneuabi:$PATH"' >> $BASH_ENV
+          command: 
             echo 'export ARCH=arm64' >> $BASH_ENV
             echo 'export SUBARCH=arm64' >> $BASH_ENV
             echo 'export KBUILD_BUILD_USER="gas,"' >> $BASH_ENV
@@ -34,7 +38,22 @@ jobs:
             cd ~/kernel
             make clean && make mrproper O=output
             make cust_defconfig O=output
-            make -j$(nproc --all) CC=/root/proton-clang/bin/clang CROSS_COMPILE=/root/proton-clang/bin/aarch64-linux-android- CROSS_COMPILE_ARM32=/root/proton-clang/bin/arm-linux-androideabi- O=output
+MAKE+=(
+			CROSS_COMPILE=aarch64-linux-gnu- \
+			CC=clang \
+			AR=llvm-ar \
+			OBJDUMP=llvm-objdump \
+			STRIP=llvm-strip
+		)
+	msg "|| Started Compilation ||"
+	make -j"$PROCS" O=out CROSS_COMPILE=aarch64-linux-gnu- \
+	CC=clang CROSS_COMPILE_ARM32=$CLANG_DIR/bin/arm-linux-gnueabi- \
+	READELF=llvm-readelf OBJSIZE=llvm-size \
+	OBJDUMP=llvm-objdump OBJCOPY=llvm-objcopy STRIP=llvm-strip \
+	NM=llvm-nm AS=llvm-as AR=llvm-ar \
+	HOSTAR=llvm-ar HOSTAS=llvm-as HOSTNM=llvm-nm \
+	LD=ld.lld
+		
       - run:
           name: Send to telegram
           no_output_timeout: 20m
