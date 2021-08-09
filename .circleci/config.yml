@@ -16,7 +16,7 @@ jobs:
           command: |
             cd ~
             mkdir clang &&
-            git clonehttps://github.com/kdrag0n/proton-clang --depth=1
+            git clone https://github.com/kdrag0n/proton-clang --depth=1
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git --depth=1 --branch=$CIRCLE_BRANCH kernel
             git clone https://github.com/GeoZac/AnyKernel.git --depth=1 --branch=miatoll AnyKernel
       - run:
