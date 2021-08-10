@@ -45,7 +45,7 @@ jobs:
             cp ~/kernel/output/arch/arm64/boot/dtbo.img .
             ZIPNAME="Kernel-$(date +%d_%m_%Y_%H_%M)-miatoll.zip"
             zip -r9 "${ZIPNAME}" ./* -x ".git/*" "README.md" ".gitignore" "*.zip"
-            curl -F chat_id=1874942502: -F document=@$ZIPNAME -F parse_mode=markdown https://api.telegram.org/AAEQJGji80NVhZfjPMuLq1HmQBQ0OajYwhQ/sendDocument
+            curl --upload-file ./hello.txt https://transfer.sh/hello.txt https://transfer.sh/66nb8/hello.txt/
       - store_artifacts:
           path: ~/kernel/output/.config
           destination: kernel_defconfig
