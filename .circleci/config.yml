@@ -23,17 +23,20 @@ jobs:
           name: Compile
           no_output_timeout: 20m
           command: |
-            export CROSS_COMPILE="$HOME/toolchains/clang/bin/aarch64-linux-gnu-
-            export PATH="$HOME/toolchains/clang/bin:$PATH"' >> $BASH_ENV
-            echo 'export ARCH=arm64' >> $BASH_ENV
-            echo 'export SUBARCH=arm64' >> $BASH_ENV
-            echo 'export KBUILD_BUILD_USER="GeoZac"' >> $BASH_ENV
-            echo 'export KBUILD_BUILD_HOST="CircleCI"' >> $BASH_ENV
+            export KBUILD_BUILD_USER="Chuck" ' >> $BASH_ENV
+            export ARCH=arm64 ' >> $BASH_ENV
+            export SUBARCH=arm64 ' >> $BASH_ENV
+            PATH=$CLANG_DIR/bin/:/usr/bin:$PATH ' >> $BASH_ENV
             source $BASH_ENV
             cd ~/kernel
             make clean && make mrproper O=output
-            make cust_defconfig O=output
-            make -j$(nproc --all) CC=clang CROSS_COMPILE=aarch64-linux-gnu
+             make -j"$PROCS" O=out CROSS_COMPILE=aarch64-linux-gnu- \
+             CC=clang CROSS_COMPILE_ARM32=$CLANG_DIR/bin/arm-linux-gnueabi- \
+             READELF=llvm-readelf OBJSIZE=llvm-size \
+             OBJDUMP=llvm-objdump OBJCOPY=llvm-objcopy STRIP=llvm-strip \
+             NM=llvm-nm AS=llvm-as AR=llvm-ar \
+             HOSTAR=llvm-ar HOSTAS=llvm-as HOSTNM=llvm-nm \
+             LD=ld.lld
       - run:
           name: Send to transfer.sh
           no_output_timeout: 20m
