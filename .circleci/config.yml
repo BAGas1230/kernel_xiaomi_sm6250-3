@@ -8,13 +8,13 @@ jobs:
       - run:
           name: Prepare Environment
           no_output_timeout: 20m
-          command: |
+          command: 
            export TERM=xterm
            apt-get update -y && ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && apt-get install bison build-essential curl flex git gnupg gperf ccache liblz4-tool libncurses5-dev libsdl1.2-dev libxml2 libxml2-utils lzop pngcrush schedtool squashfs-tools xsltproc zip zlib1g-dev build-essential kernel-package libncurses5-dev bzip2 git python wget gcc g++ curl sudo libssl-dev openssl -y
       - run:
           name: Downloading sources
           no_output_timeout: 20m
-          command: |
+          command: 
             cd ~
             mkdir clang && git clone https://github.com/kdrag0n/proton-clang --depth=1
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git --depth=1 --branch=$CIRCLE_BRANCH kernel
@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Compile
           no_output_timeout: 20m
-          command: |
+          command: 
             export KBUILD_BUILD_USER="bagas"
             export ARCH=arm64 ' 
             export SUBARCH=arm64
