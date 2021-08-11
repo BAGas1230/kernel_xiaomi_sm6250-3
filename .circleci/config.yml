@@ -23,10 +23,10 @@ jobs:
           name: Compile
           no_output_timeout: 20m
           command: |
-            export KBUILD_BUILD_USER="Chuck" ' >> $BASH_ENV
-            export ARCH=arm64 ' >> $BASH_ENV
-            export SUBARCH=arm64 ' >> $BASH_ENV
-            PATH=$CLANG_DIR/bin/:/usr/bin:$PATH ' >> $BASH_ENV
+            export KBUILD_BUILD_USER="bagas"
+            export ARCH=arm64 ' 
+            export SUBARCH=arm64
+            PATH=$CLANG_DIR/bin/:/usr/bin:$PATH 
             source $BASH_ENV
             cd ~/kernel
             make clean && make mrproper O=output
