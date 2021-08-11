@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   Kernel_miatoll:
    docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:22.04
    steps:
       - run:
           name: Prepare Environment
@@ -16,7 +16,7 @@ jobs:
           no_output_timeout: 20m
           command: |
             cd ~
-            mkdir clang && https://github.com/kdrag0n/proton-clang
+            mkdir clang && git clone https://github.com/kdrag0n/proton-clang --depth=1
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git --depth=1 --branch=$CIRCLE_BRANCH kernel
             git clone https://github.com/GeoZac/AnyKernel.git --depth=1 --branch=miatoll AnyKernel
       - run:
