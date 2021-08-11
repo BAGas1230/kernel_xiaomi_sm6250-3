@@ -16,17 +16,15 @@ jobs:
           no_output_timeout: 20m
           command: |
             cd ~
-            mkdir clang && wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r428724.tar.gz -O clang.tar.gz && tar -xzf clang.tar.gz -C clang && rm clang.tar.gz
-            git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 --depth=1 toolchain
-            git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 --depth=1 toolchain-arm
+            mkdir clang && https://github.com/kdrag0n/proton-clang
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git --depth=1 --branch=$CIRCLE_BRANCH kernel
             git clone https://github.com/GeoZac/AnyKernel.git --depth=1 --branch=miatoll AnyKernel
       - run:
           name: Compile
           no_output_timeout: 20m
           command: |
-            echo 'export CROSS_COMPILE=$HOME/toolchain/bin/aarch64-linux-android-' >> $BASH_ENV
-            echo 'export PATH="$HOME/clang/bin:$HOME/toolchain/bin:$HOME/toolchain-arm/bin:$PATH"' >> $BASH_ENV
+            export CROSS_COMPILE="$HOME/toolchains/proton-clang/bin/aarch64-linux-gnu-
+            export PATH="$HOME/toolchains/proton-clang/bin:$PATH"' >> $BASH_ENV
             echo 'export ARCH=arm64' >> $BASH_ENV
             echo 'export SUBARCH=arm64' >> $BASH_ENV
             echo 'export KBUILD_BUILD_USER="GeoZac"' >> $BASH_ENV
@@ -35,7 +33,7 @@ jobs:
             cd ~/kernel
             make clean && make mrproper O=output
             make cust_defconfig O=output
-            make -j$(nproc --all) CC=/root/clang/bin/clang CROSS_COMPILE=/root/toolchain/bin/aarch64-linux-android- CLANG_TRIPLE=/root/clang/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=/root/toolchain-arm/bin/arm-linux-androideabi- O=output
+            make -j$(nproc --all) $HOME/toolchains/proton-clang/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Send to telegram
           no_output_timeout: 20m
