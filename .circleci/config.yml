@@ -23,8 +23,8 @@ jobs:
           name: Compile
           no_output_timeout: 20m
           command: |
-            export CROSS_COMPILE="$HOME/toolchains/proton-clang/bin/aarch64-linux-gnu-
-            export PATH="$HOME/toolchains/proton-clang/bin:$PATH"' >> $BASH_ENV
+            export CROSS_COMPILE="$HOME/toolchains/clang/bin/aarch64-linux-gnu-
+            export PATH="$HOME/toolchains/clang/bin:$PATH"' >> $BASH_ENV
             echo 'export ARCH=arm64' >> $BASH_ENV
             echo 'export SUBARCH=arm64' >> $BASH_ENV
             echo 'export KBUILD_BUILD_USER="GeoZac"' >> $BASH_ENV
@@ -33,7 +33,7 @@ jobs:
             cd ~/kernel
             make clean && make mrproper O=output
             make cust_defconfig O=output
-            make -j$(nproc --all) $HOME/toolchains/proton-clang/bin:$PATH"' >> $BASH_ENV
+            make -j$(nproc --all) $HOME/toolchains/clang/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Send to telegram
           no_output_timeout: 20m
