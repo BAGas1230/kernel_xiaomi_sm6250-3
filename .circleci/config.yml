@@ -33,9 +33,9 @@ jobs:
             cd ~/kernel
             make clean && make mrproper O=output
             make cust_defconfig O=output
-            make -j$(nproc --all) $HOME/toolchains/clang/bin:$PATH"' >> $BASH_ENV
+            make -j$(nproc --all) CC=clang CROSS_COMPILE=aarch64-linux-gnu
       - run:
-          name: Send to telegram
+          name: Send to transfer.sh
           no_output_timeout: 20m
           command: |
             cd ~/AnyKernel
